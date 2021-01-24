@@ -65,7 +65,8 @@ public class TypingChallenge extends Turtle {
             
             if(Startbutton.isClicked()){
                 values.setCursor(0);
-                values.setCursor(0);
+                // 画像だけ初期位置を設定しているけど文字の初期位置指定しなくて大丈夫？
+                keys.setCursor(0);  
                 result.looks(values.getObjectAtCursor());
                 print("スタート");
             }
@@ -76,6 +77,10 @@ public class TypingChallenge extends Turtle {
             if(OKbutton.isClicked()){
                 print("ok");
                 String key = input.text();
+
+                /*
+                    元の処理
+                */
                 if (keys.getObjectAtCursor().getText().equals(key)) {
                     // 見つかった
                     keys.getObjectAtCursor();
@@ -84,10 +89,48 @@ public class TypingChallenge extends Turtle {
                            print("番地が見つかりました");
                         }
                     }
-                    if (values.getObjectAtCursor().equals(key)) {
+
+                    if (values.getObjectAtCursor().equals(key)) {　// 画像と文字列を比較しているからヒットしない
                         // 見つかった
                         print("values:見つかった");
                         values.moveCursorToNext();
+                        input.clearText();
+                    }
+                }
+
+                /*
+                    一番簡単に実装した場合
+                    一つずつ順番に進めていくだけならこれで十分
+
+                    getObjectAtCursor(); 現在の参照先を取得
+                    moveCursorToNext(); 一つ進める
+                    今、何番目を参照しているかはこれで制御しているので、
+                    for(int i=0; i<=keys.getSize()-1; i++)
+                    でやっているような何番目にヒットしたか調べる処理は必要ない
+                */
+                if (keys.getObjectAtCursor().getText().equals(key)) {
+                    keys.moveCursorToNext();
+                    values.moveCursorToNext();
+                    result.looks(values.getObjectAtCursor());
+                    input.clearText();
+                }
+
+                /*
+                    最初にやろうとしていた方法を動くように実装した場合
+                */
+                if (keys.getObjectAtCursor().getText().equals(key)) {
+                    int currentIndex = -1;
+                    for(int i=0; i<=keys.getSize()-1; i++){
+                        if(keys.get(i).equals(key)){
+                            // 該当する文字列の順番を保存してループから抜ける
+                            currentIndex = i;
+                            break;
+                        }
+                    }
+                    if (currentIndex >= 0) {
+                        keys.moveCursorToNext();
+                        values.setCursor(currentIndex);
+                        result.looks(values.getObjectAtCursor());
                         input.clearText();
                     }
                 }
